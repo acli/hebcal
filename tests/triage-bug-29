@@ -1,0 +1,27 @@
+#!/bin/sh
+# Usage: triage-bug-29 YEAR
+
+cd tests 2>/dev/null
+
+case "$1" in
+[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9])
+	year="$1"
+	;;
+*)
+	echo Invalid date >&2
+	exit 1
+esac
+
+../hebcal --what-if-today-is $year-1-1 > 29.expected
+../hebcal --what-if-today-is $year-1-1 -S | while read a; do
+	date="`echo "$a"|awk '{print $1}'`"
+	yyyy="`echo "$date"|cut -d/ -f3`"
+	mm="`echo "$date"|cut -d/ -f1`"
+	dd="`echo "$date"|cut -d/ -f2`"
+	if ../hebcal --what-if-today-is $yyyy-$mm-$dd | diff -u 29.expected -; then
+		:
+	else
+		echo "diff failed at $yyyy-$mm-$dd"
+		exit 1
+	fi
+done

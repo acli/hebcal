@@ -381,6 +381,7 @@ void handleArgs(int argc, char *argv[])
       {"today-brief", no_argument, 0, 'T'},
       {"version", no_argument, 0, 0},
       {"weekday", no_argument, 0, 'w'},
+      {"what-if-today-is", required_argument, 0, 0},
       {"yahrtzeit", required_argument, 0, 'Y'},
       {"years", required_argument, 0, 0},
       {"year-abbrev", no_argument, 0, 'y'},
@@ -402,6 +403,10 @@ void handleArgs(int argc, char *argv[])
             help_sw = 1;
          } else if (0 == strcmp("lang", long_options[option_index].name)) {
             langStr = strdup(optarg);
+         } else if (0 == strcmp("what-if-today-is", long_options[option_index].name)) {
+            if (sscanf(optarg, "%d-%d-%d", &greg_today.yy, &greg_today.mm, &greg_today.dd) < 3) {
+               die("unable to read --what-if-today-is argument: %s", optarg);
+	    }
          } else if (0 == strcmp("years", long_options[option_index].name)) {
            if (!(sscanf(optarg, "%d", &numYears) == 1)) {
                die("unable to read --years argument: %s", optarg);
