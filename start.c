@@ -578,7 +578,13 @@ void handleArgs(int argc, char *argv[])
 
    if (latitudeStr != NULL) {
       if (sscanf(latitudeStr, "%d,%d", &latdeg, &latmin) < 2) {
-         die("unable to read latitude argument: %s", latitudeStr);
+         float tmp;
+         if (sscanf(latitudeStr, "%f", &tmp) < 1) {
+            die("unable to read latitude argument: %s", latitudeStr);
+         } else {
+            latdeg = (int) tmp;
+            latmin = (int) (60*(tmp - (float)latdeg) + 0.5);
+         }
       }
       latp = 1;
       if ((abs(latdeg) > 90) || latmin > 60 || latmin < 0) {
@@ -593,7 +599,13 @@ void handleArgs(int argc, char *argv[])
 
    if (longitudeStr != NULL) {
       if (sscanf(longitudeStr, "%d,%d", &longdeg, &longmin) < 2) {
-         die("unable to read longitude argument: %s", longitudeStr);
+         float tmp;
+         if (sscanf(longitudeStr, "%f", &tmp) < 1) {
+            die("unable to read longitude argument: %s", longitudeStr);
+         } else {
+            longdeg = (int) tmp;
+            longmin = (int) (60*(tmp - (float)longdeg) + 0.5);
+         }
       }
       longp = 1;
       if ((abs(longdeg) > 180) || longmin > 60 || longmin < 0) {
