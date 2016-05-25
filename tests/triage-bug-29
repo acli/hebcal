@@ -13,6 +13,22 @@ case "$1" in
 esac
 
 ../hebcal --what-if-today-is $year-1-1 -hS > 29.expected || exit $?
+
+rosh_hashana="`../hebcal --what-if-today-is $year-1-1 |grep 'Rosh Hashana [1-9]' | awk '{print $1}'`"
+rosh_hashana_yyyy="`echo "$rosh_hashana"|cut -d/ -f3`"
+rosh_hashana_mm="`echo "$rosh_hashana"|cut -d/ -f1`"
+rosh_hashana_dd="`echo "$rosh_hashana"|cut -d/ -f2`"
+echo "Rosh Hashana is $rosh_hashana_yyyy-$rosh_hashana_mm-$rosh_hashana_dd"
+
+before_dd="`cal $rosh_hashana_mm $year|tail -n +3|grep -w "$rosh_hashana_dd"|cut -c1-2|awk '{print $1}'`"
+if [ -n "$before_dd" -a "$before_dd" != "$rosh_hashana_dd" ]; then
+	before_mm="$rosh_hashana_mm"
+else
+	before_mm="`expr "$rosh_hashana_mm" - 1`"
+	before_dd="`cal $before_mm $year|grep -v '^ *$'|tail -1|cut -c1-2|awk '{print $1}'`"
+fi
+echo "-> Sunday before Rosh Hashana is $year-$before_mm-$before_dd"
+
 ../hebcal --what-if-today-is $year-1-1 -S | while read a; do
 	date="`echo "$a"|awk '{print $1}'`"
 	yyyy="`echo "$date"|cut -d/ -f3`"
